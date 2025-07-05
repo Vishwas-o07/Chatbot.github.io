@@ -41,7 +41,7 @@ def index():
     return render_template("index.html")
 
 # Chat route
-@app.route("/get")
+@app.route("https://weather-chatbot.onrender.com/get")
 def get_response():
     user_msg = request.args.get("userMessage")
 
