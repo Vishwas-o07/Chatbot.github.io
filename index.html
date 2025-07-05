@@ -1,0 +1,301 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Chatbot</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #d3cce3, #e9e4f0);
+            margin: 0;
+            padding: 0;
+        }
+
+        #chatbox {
+            width: 60%;
+            margin: auto;
+            margin-top: 20px;
+            border: 1px solid #3aadef;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .botText,
+        .userText {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin: 10px;
+            display: inline-flex;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            word-wrap: break-word;
+            min-height: 40px;
+        }
+
+        .userText {
+            background-color: rgb(109, 203, 240);
+            text-align: right;
+            color: white;
+            float: right;
+            clear: both;
+        }
+
+        .botText {
+            background-color: rgb(210, 242, 255);
+            color: #003366;
+            float: left;
+            clear: both;
+        }
+
+        .botText img.icon,
+        .userText img.icon {
+            width: 25px;
+            height: 25px;
+            margin-right: 10px;
+            border-radius: 30%;
+        }
+
+        .timestamp-wrapper.bot-time {
+            text-align: left;
+            margin: 2px 12px 0 12px;
+        }
+
+        .timestamp-wrapper.user-time {
+            text-align: right;
+            margin: 2px 12px 0 12px;
+        }
+
+        .timestamp-wrapper {
+            clear: both;
+            font-size: 0.75em;
+            color: gray;
+        }
+
+        #userInput {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #textInput {
+            width: 50%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid rgb(41, 189, 247);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        #textInput:focus {
+            border-color: #249ce2;
+            outline: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #buttonInput {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: rgb(20, 177, 230);
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        #buttonInput:hover {
+            background-color: rgb(0, 170, 249);
+            transform: scale(1.05);
+        }
+
+        #suggestions {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #suggestions li {
+            text-align: left;
+            background: #eee;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        #suggestions li:hover {
+            background: #ddd;
+        }
+
+        #typingIntro {
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            font-size: 18px;
+            color: #003366;
+            width: 0;
+            animation: typing 4s steps(70, end) forwards;
+            margin: 20px 0 0 5px;
+            text-align: left;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #e0eafc, #cfdef3);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .intro-wrapper {
+            width: 60%;
+            margin: 0 auto 10px auto;
+            text-align: left;
+            padding-left: 5px;
+        }
+
+        @keyframes typing {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 46ch;
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            border-bottom: 4px solid #5a69e3;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            flex-grow: 1;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 3em;
+            letter-spacing: 1.5px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .header img {
+            height: 80px;
+            margin-left: 20px;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>🌦️ Weather Chatbot</h1>
+            <p>Your friendly assistant for real-time weather and smart Q&A</p>
+        </div>
+        <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Bot Assistant">
+    </div>
+    <div class="intro-wrapper">
+        <p id="typingIntro">Hi! Type a city to get the weather or ask me something else</p>
+    </div>
+    <div id="chatbox"></div>
+    <div id="userInput">
+        <input id="textInput" type="text" placeholder="Type your message here...">
+        <button id="buttonInput">Send</button>
+        <ul id="suggestions"></ul>
+    </div>
+
+    <script>
+        function speak(text) {
+            const msg = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(msg);
+        }
+
+        function getTimestamp() {
+            const now = new Date();
+            return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function getUserResponse() {
+            let userText = $('#textInput').val();
+            if (!userText) return;
+            $('#textInput').val("");
+            $('#chatbox').append(`
+                <p class='userText'>
+                    <img class="icon" src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="User Icon" />
+                    <span>${userText}</span>
+                </p>
+                <div class="timestamp-wrapper user-time">${getTimestamp()}</div>`);
+            $('#suggestions').empty();
+
+            $.get("/get", { userMessage: userText }).done(function (data) {
+                if (data.weather) {
+                    let iconURL = `http://openweathermap.org/img/wn/${data.icon}@2x.png`;
+                    let msg = `Weather in ${data.city}: ${data.desc}, ${data.temp}°C, Humidity: ${data.humidity}%`;
+                    $('#chatbox').append(`
+                        <p class='botText'>
+                            <img class="icon" src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Bot Icon" />
+                            <img src='${iconURL}' style='vertical-align:middle;margin-right:10px;' />
+                            <span>${msg}</span>
+                        </p>
+                        <div class="timestamp-wrapper bot-time">${getTimestamp()}</div>`);
+                    speak(msg);
+                } else {
+                    $('#chatbox').append(`
+                        <p class='botText'>
+                            <img class="icon" src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Bot Icon" />
+                            <span>${data.text}</span>
+                        </p>
+                        <div class="timestamp-wrapper bot-time">${getTimestamp()}</div>`);
+                    speak(data.text);
+                }
+                $('#chatbox').scrollTop($('#chatbox')[0].scrollHeight);
+            });
+        }
+
+        $('#buttonInput').click(getUserResponse);
+
+        $('#textInput').keypress(function (e) {
+            if (e.which == 13) getUserResponse()
+        });
+
+        $('#textInput').on('input', function () {
+            const query = $(this).val();
+            if (query.length < 2) return;
+            fetch(`https://api.teleport.org/api/cities/?search=${query}`)
+                .then(res => res.json())
+                .then(data => {
+                    const list = data._embedded['city:search-results'].slice(0, 5);
+                    $('#suggestions').empty();
+                    list.forEach(item => {
+                        let name = item.matching_full_name;
+                        $('#suggestions').append(`<li onclick="chooseCity('${name}')">${name}</li>`);
+                    });
+                });
+        });
+
+        function chooseCity(name) {
+            $('#textInput').val(name);
+            $('#suggestions').empty();
+        }
+    </script>
+</body>
+
+</html>
