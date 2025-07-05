@@ -245,7 +245,7 @@
                 <div class="timestamp-wrapper user-time">${getTimestamp()}</div>`);
             $('#suggestions').empty();
 
-            $.get("https://github.com/Vishwas-o07/Chatbot.github.io/get", { userMessage: userText }).done(function (data) {
+            $.get("/get", { userMessage: userText }).done(function (data) {
                 if (data.weather) {
                     let iconURL = `http://openweathermap.org/img/wn/${data.icon}@2x.png`;
                     let msg = `Weather in ${data.city}: ${data.desc}, ${data.temp}°C, Humidity: ${data.humidity}%`;
